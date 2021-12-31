@@ -15,12 +15,13 @@ public class Server {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         PrintStream ps = new PrintStream(socket.getOutputStream());
 
-
         while (true) {
             System.out.print("Insert command: ");
             String str = scanner.nextLine();
             ps.println(str);
-            System.out.println(bufferedReader.readLine());
+            String output = bufferedReader.readLine();
+
+            System.out.println(output == null ? '\n' : output.replace('\0', '\n'));
         }
 
     }
